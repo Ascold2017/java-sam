@@ -1,6 +1,7 @@
 package Engine.FlightObject;
 
 import Engine.*;
+import SAM.SAM_PARAMS;
 import Tools.Vector3D;
 import java.util.Date;
 
@@ -21,10 +22,10 @@ public class Missile extends BaseFlightObject {
 
     @Override
     public void update(double time) {
-        final double dTime = (time - this.timeInAir) / 1000;
+        final double dTime = (time - this.timeInAir);
         super.update(time);
         // TODO if (!this.target) return this.destroy();
-        final double dFlightDistance = dTime * this.velocity / 1000;
+        final double dFlightDistance = dTime * this.velocity;
         this.traveledDistance += dFlightDistance;
 
         final Vector3D targetVector = new Vector3D(this.target.getCurrentPoint());

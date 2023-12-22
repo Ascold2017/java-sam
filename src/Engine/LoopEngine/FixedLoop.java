@@ -1,7 +1,10 @@
 package Engine.LoopEngine;
 
-import Engine.LoopEngine.Loop;
+class FixedLoop extends Loop {
+    final double interval;
 
-public abstract class FixedLoop extends Loop {
-    double interval = 0;
+    FixedLoop(String name, LoopHandler handler, double interval) {
+        super(name, handler);
+        this.interval = interval;
+    }
 }

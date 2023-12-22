@@ -1,14 +1,15 @@
 package Engine.LoopEngine;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 public class LoopEngine {
-    protected HashMap<String, Loop> loops = new HashMap<String, Loop>();
-    protected HashMap<String, FixedLoop> fixedLoops = new HashMap<String, FixedLoop>();
+    protected ArrayList<Loop> loops = new ArrayList<>();
+    protected ArrayList<FixedLoop> fixedLoops = new ArrayList<>();
     protected double maxDelta = 100; // ms
     protected double fps = 10;
-    protected double lastTime = 0;
+    protected double lastTime;
     protected boolean isStop = false;
     protected double acceleration = 1;
 
@@ -17,10 +18,14 @@ public class LoopEngine {
         this.infiniteLoop();
     }
 
-    void infiniteLoop () {
+    void infiniteLoop() {
         Runnable r = () -> {
             while (true) {
-                this.update();
+                try {
+                    this.update();
+                } catch (Exception ex) {
+                    System.out.println(ex.toString());
+                }
             }
         };
         Thread t = new Thread(r, "LoopThread");
@@ -32,18 +37,20 @@ public class LoopEngine {
         this.isStop = acc <= 0;
     }
 
-    public void addLoop(String name, Loop loop) {
-        this.loops.put(name, loop);
+    public void addLoop(String name, LoopHandler loopHandler) {
+        this.loops.add(new Loop(name, loopHandler));
     }
 
-    public void addFixedLoop(String name, FixedLoop loop) {
-        this.fixedLoops.put(name, loop);
+    public void addFixedLoop(String name, LoopHandler loopHandler, double interval) {
+        this.fixedLoops.add(new FixedLoop(name, loopHandler, interval));
     }
-    public void removeLoop(String name) {
-        this.loops.remove(name);
+
+    protected void removeLoop(String name) {
+        this.loops.removeIf(l -> Objects.equals(l.name, name));
     }
+
     public void removeFixedLoop(String name) {
-        this.fixedLoops.remove(name);
+        this.fixedLoops.removeIf(l -> Objects.equals(l.name, name));
     }
 
     private void update() {
@@ -54,17 +61,18 @@ public class LoopEngine {
 
         this.lastTime = new Date().getTime();
 
-        for (Loop loop : this.loops.values()) {
+
+        for (Loop loop : this.loops) {
             if (!loop.isPaused) {
                 loop.time += delta;
-                loop.handler(loop.time);
+                loop.lHandler.handler(loop.time / 1000);
             }
         }
-        for (FixedLoop loop : this.fixedLoops.values()) {
+        for (FixedLoop loop : this.fixedLoops) {
             if (!loop.isPaused) {
                 loop.time += delta;
                 if (loop.time >= loop.interval) {
-                    loop.handler(loop.time);
+                    loop.lHandler.handler(loop.time / 1000);
                     loop.time = 0;
                 }
             }

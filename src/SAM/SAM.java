@@ -1,41 +1,26 @@
 package SAM;
 
 import Engine.Engine;
+import Engine.FlightObject.BaseFlightObject;
 import Engine.FlightObject.Enemy;
 import Engine.FlightObject.Missile;
-import Engine.LoopEngine.Loop;
+import Engine.LoopEngine.LoopHandler;
 
 import java.util.ArrayList;
+import java.util.List;
 
-class RecalculateTargetsLoop extends Loop {
-    final Engine engine;
-    RecalculateTargetsLoop(Engine engine) {
-        this.engine = engine;
-    }
-    public void handler(double time) {
-            /*
-            this.recognizedFlightObjects = this.sam.recaclulateRecognizedFlightObjects(this.flightObjects.filter(fo => fo instanceof Enemy) as Enemy[]);
-            this.launchedMissiles = this.flightObjects.filter(fo => fo instanceof Missile)
-        .map(m => ({
-                    identifier: m.name,
-                    x: m.getCurrentPoint().x,
-                    y: m.getCurrentPoint().y,
-                    z: m.getCurrentPoint().z,
-                    velocity: m.getCurrentPoint().v
-        }));
-*/
-        // System.out.println(this.engine.flightObjects);
-        // this.engine.eventListener.handler("update", this.engine.recognizedFlightObjects, this.engine.launchedMissiles);
-    }
-}
+import static Tools.CollectionTools.findByProperty;
 
 public class SAM {
     final Engine engine;
-    private boolean isEnabled = false;
-    private ArrayList<Enemy> recognizedFlightObjects = new ArrayList<>();
-    private ArrayList<Missile> launchedMissiles = new ArrayList<>();
-    SAM(Engine engine) {
+    private final ArrayList<DetectedFlightObject> detectedFlightObjects = new ArrayList<>();
+    private final ArrayList<Missile> launchedMissiles = new ArrayList<>();
+    private boolean isEnabled = true;
+
+    public SAM(Engine engine) {
         this.engine = engine;
+        LoopHandler updateRadar = this::updateRadar;
+        this.engine.addLoop("updateRadar", updateRadar);
     }
 
 
@@ -43,38 +28,37 @@ public class SAM {
         this.isEnabled = value;
     }
 
+    void updateRadar(double time) {
 
-/*
-    void launchMissile(String targetId) {
-        final BaseFlightObject target = findByProperty(this.flightObjects, f -> f.id.equals(targetId));
-        if (!target) return;
-        final Missile missile = new Missile(this, target);
+        this.detectedFlightObjects.clear();
+        if (!this.isEnabled) return;
+        ArrayList<BaseFlightObject> flightObjects = this.engine.getFlightObjects();
+        for (BaseFlightObject flightObject : flightObjects) {
+            detectedFlightObjects.add(new DetectedFlightObject(flightObject));
+        }
+        this.printFlightObjects();
+    }
+
+    void printFlightObjects() {
+        for (DetectedFlightObject fo : this.detectedFlightObjects) {
+            System.out.println(fo);
+            System.out.println("_________________________________");
+        }
+    }
+
+
+
+    public void launchMissile(String targetId) {
+        final List<DetectedFlightObject> target = findByProperty(this.detectedFlightObjects, f -> f.id.equals(targetId));
+        System.out.println(target);
+        if (target.isEmpty()) return;
+        if (target.getFirst().isMissile) return;
+        final Missile missile = new Missile(this.engine, (Enemy) target.getFirst().getFlightObject());
+        System.out.println(missile);
         //Sounds.missileStart();
-        this.addFlightObject(missile);
+        this.engine.addFlightObject(missile);
     }
 
- */
-
-    /*
-    String getTargetOnAzimutAndElevation(double azimuth, double elevation) {
 
 
-        final Enemy flightObject =  findByProperty(recognizedFlightObjects, fo -> {
-            return  (Math.abs(fo.azimuth - azimuth) <= SAM_PARAMS.RADAR_AZIMUT_DETECT_ACCURACY / 2) &&
-                    (Math.abs(elevation - fo.elevation) <= SAM_PARAMS.RADAR_ELEVATION_DETECT_ACCURACY / 2);
-        });
-        return flightObject != null ? flightObject.identifier : null;
-    }
-
-    double getTargetOnAzimutElevationAndDistance(double azimuth, double elevation, double distance) {
-
-        final String id = this.getTargetOnAzimutAndElevation(azimuth, elevation);
-        if (id == null) return 0;
-        final Enemy fo = (Enemy) findByProperty(this.recognizedFlightObjects, f -> f.id.equals(id));
-        return Math.abs(fo.distance - distance) <= SAM_PARAMS.RADAR_DISTANCE_DETECT_ACCURACY / 2 ? fo.id : null;
-
-        return 0;
-    }
-
-     */
 }

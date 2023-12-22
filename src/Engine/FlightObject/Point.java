@@ -1,10 +1,10 @@
 package Engine.FlightObject;
 
 public class Point {
-    public double x = 0;
-    public double y = 0;
-    public double z = 0;
-    public double v = 0;
+    public double x;
+    public double y;
+    public double z;
+    public double v;
 
     public Point(double x, double y, double z, double v){
         this.x = x;

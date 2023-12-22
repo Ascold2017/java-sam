@@ -1,8 +1,13 @@
 package Engine.LoopEngine;
 
-public abstract class Loop {
+class Loop {
+    public final String name;
+    final LoopHandler lHandler;
     public boolean isPaused = false;
     public double time = 0;
 
-    abstract public void handler(double time);
+    Loop(String name, LoopHandler handler) {
+        this.name = name;
+        this.lHandler = handler;
+    }
 }
