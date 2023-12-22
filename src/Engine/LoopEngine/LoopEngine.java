@@ -21,11 +21,7 @@ public class LoopEngine {
     void infiniteLoop() {
         Runnable r = () -> {
             while (true) {
-                try {
-                    this.update();
-                } catch (Exception ex) {
-                    System.out.println(ex.toString());
-                }
+                this.update();
             }
         };
         Thread t = new Thread(r, "LoopThread");
@@ -38,19 +34,25 @@ public class LoopEngine {
     }
 
     public void addLoop(String name, LoopHandler loopHandler) {
-        this.loops.add(new Loop(name, loopHandler));
+        final ArrayList<Loop> loops = new ArrayList<>(this.loops);
+        loops.add(new Loop(name, loopHandler));
+        this.loops = loops;
     }
 
     public void addFixedLoop(String name, LoopHandler loopHandler, double interval) {
-        this.fixedLoops.add(new FixedLoop(name, loopHandler, interval));
+        final ArrayList<FixedLoop> loops = new ArrayList<>(this.fixedLoops);
+        loops.add(new FixedLoop(name, loopHandler, interval));
+        this.fixedLoops = loops;
     }
 
     protected void removeLoop(String name) {
-        this.loops.removeIf(l -> Objects.equals(l.name, name));
+
+        this.loops = new ArrayList<Loop>(this.loops.stream().filter(l -> !Objects.equals(l.name, name)).toList());
     }
 
     public void removeFixedLoop(String name) {
-        this.fixedLoops.removeIf(l -> Objects.equals(l.name, name));
+
+        this.fixedLoops = new ArrayList<FixedLoop>(this.fixedLoops.stream().filter(l -> !Objects.equals(l.name, name)).toList());
     }
 
     private void update() {

@@ -35,6 +35,7 @@ public class BaseFlightObject {
     }
 
     void destroy() {
+        System.out.println("DESTROY " + this.id);
         this.engine.removeFlightObject(this.id);
     }
 

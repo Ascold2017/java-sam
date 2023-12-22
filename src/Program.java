@@ -26,6 +26,14 @@ public class Program {
             }
         };
         new Timer(true).schedule(task,  1000);
+        TimerTask task2 = new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("LAUNCH!!!!");
+                sam.launchMissile("FlightObject01");
+            }
+        };
+        new Timer(true).schedule(task2,  2000);
 
 
 

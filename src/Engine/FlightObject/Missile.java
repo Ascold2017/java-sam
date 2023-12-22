@@ -23,8 +23,8 @@ public class Missile extends BaseFlightObject {
     @Override
     public void update(double time) {
         final double dTime = (time - this.timeInAir);
-        super.update(time);
         // TODO if (!this.target) return this.destroy();
+        super.update(time);
         final double dFlightDistance = dTime * this.velocity;
         this.traveledDistance += dFlightDistance;
 
@@ -33,14 +33,11 @@ public class Missile extends BaseFlightObject {
         final double targetDistance = targetVector.sub(prevMissileVector).r();
         final Vector3D currentPosition = this.calcMissilePosition(targetVector, prevMissileVector, targetDistance, dFlightDistance);
         this.currentPoint = new Point(currentPosition.x(), currentPosition.y(), currentPosition.z(), this.velocity);
-
         if (targetDistance <= this.killRadius) {
             this.target.kill();
             this.destroy();
         }
-        if (
-                this.traveledDistance >= this.maxDistance
-        ) {
+        if (this.traveledDistance >= this.maxDistance) {
             this.destroy();
         }
     }

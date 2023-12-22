@@ -95,7 +95,7 @@ public class DetectedFlightObject {
 
     @Override
     public String toString() {
-        String b = "|" +
+        return "|" +
                 this.id +
                 "|X:" +
                 this.x +
@@ -115,6 +115,5 @@ public class DetectedFlightObject {
                 this.param +
                 "|Visible:" +
                 (this.isVisible ? "+" : "-");
-        return b;
     }
 }
