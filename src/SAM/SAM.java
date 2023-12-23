@@ -40,6 +40,7 @@ public class SAM {
     }
 
     void printFlightObjects() {
+        System.out.println("DetectedFlightObjects: " + this.detectedFlightObjects.size());
         for (DetectedFlightObject fo : this.detectedFlightObjects) {
             System.out.println(fo);
             System.out.println("_________________________________");
