@@ -6,9 +6,7 @@ import Engine.FlightObject.Point;
 import Engine.LoopEngine.LoopHandler;
 
 import java.io.IOException;
-import java.util.Arrays;
 
-import static Tools.CollectionTools.some;
 
 public class ConsoleUI {
     private final Engine engine;
@@ -62,7 +60,7 @@ public class ConsoleUI {
             for (int j = 0; j < this.screenSize; j++) {
                 int finalI = i;
                 int finalJ = j;
-                boolean isTarget = some(this.engine.getFlightObjects(), fo -> this.isTargetOnPosition(fo, finalI, finalJ));
+                boolean isTarget = this.engine.getFlightObjects().stream().anyMatch(fo -> this.isTargetOnPosition(fo, finalI, finalJ));
                 field.append(isTarget ? '*' : i == this.screenSize / 2 ? '_' : j == this.screenSize /2 ? '|' : ' ');
             }
             field.append('|');

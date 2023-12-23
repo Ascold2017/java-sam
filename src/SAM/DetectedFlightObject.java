@@ -39,7 +39,7 @@ public class DetectedFlightObject {
         this.x = flightObject.getCurrentPoint().x;
         this.y = flightObject.getCurrentPoint().y;
         this.rotation = flightObject.getCurrentRotation();
-        this.size = 2 * Math.sqrt(flightObject.visibilityK / Math.PI) / 1000;
+        this.size = 2 * Math.sqrt(flightObject.visibilityK / Math.PI);
         this.visibilityK = flightObject.visibilityK > 1 ? 1 : flightObject.visibilityK;
 
         final boolean inAllowedElevation = this.elevation > SAM_PARAMS.MIN_ELEVATION && this.elevation < SAM_PARAMS.MAX_ELEVATION;
@@ -108,9 +108,9 @@ public class DetectedFlightObject {
                 "|Dist:" +
                 this.distance +
                 "|Azimuth:" +
-                this.azimuth * (180 / Math.PI) +
+                Math.toDegrees(this.azimuth) +
                 "|Elevation:" +
-                this.elevation * (180 / Math.PI) +
+                Math.toDegrees(this.elevation) +
                 "|Param:" +
                 this.param +
                 "|Visible:" +

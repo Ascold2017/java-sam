@@ -9,7 +9,6 @@ import Engine.LoopEngine.LoopHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-import static Tools.CollectionTools.findByProperty;
 
 public class SAM {
     final Engine engine;
@@ -50,7 +49,7 @@ public class SAM {
 
 
     public void launchMissile(String targetId) {
-        final List<DetectedFlightObject> target = findByProperty(this.detectedFlightObjects, f -> f.id.equals(targetId));
+        final List<DetectedFlightObject> target = this.detectedFlightObjects.stream().filter(f -> f.id.equals(targetId)).toList();
         System.out.println(target);
         if (target.isEmpty()) return;
         if (target.getFirst().isMissile) return;
