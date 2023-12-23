@@ -11,7 +11,6 @@ public class BaseFlightObject {
     protected double timeInAir = 0;
     protected final Engine engine;
 
-
     BaseFlightObject(Engine engine, String id, double visibilityK) {
         this.id = id;
         this.engine = engine;
@@ -36,6 +35,7 @@ public class BaseFlightObject {
 
     void destroy() {
         System.out.println("DESTROY " + this.id);
+        this.isDestroyed = true;
         this.engine.removeFlightObject(this.id);
     }
 

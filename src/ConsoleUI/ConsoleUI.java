@@ -26,7 +26,6 @@ public class ConsoleUI {
         this.prinfFlightObjects();
         //this.drawField();
     }
-
     private void prinfFlightObjects() {
         this.engine.printFlightObjects();
     }

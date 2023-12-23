@@ -1,11 +1,11 @@
 package Engine.LoopEngine;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class InfiniteLoopThread extends Thread {
     final LoopEngineRes res;
-    private final int fps = 10;
-    private final int maxDelta = 100;
     private double lastTime = 0;
 
     InfiniteLoopThread(LoopEngineRes res) {
@@ -13,25 +13,25 @@ class InfiniteLoopThread extends Thread {
         this.res = res;
         this.lastTime = new Date().getTime();
     }
+
     @Override
     public void run() {
         synchronized (res) {
-            try {
-                while (true) {
-                    this.update(res);
-                }
-            } catch (Exception ex) {
-                System.out.println("EXCEPTION IN INFINITE LOOP: " + ex);
+            while (true) {
+                this.update(res);
             }
         }
     }
 
-     void update(LoopEngineRes res) {
-        if (res.isStop() || isInterrupted()) return;
+    void update(LoopEngineRes res) {
+        if (res.isStop()) return;
 
         double delta = ((double) new Date().getTime() - this.lastTime) * res.acceleration();
-        if (delta > this.maxDelta) delta = this.maxDelta;
-        if (delta < (double) 1000 / this.fps) return;
+        int maxDelta = 100;
+        int fps = 10;
+        if (delta > maxDelta) delta = maxDelta;
+
+        if (delta < (double) 1000 / fps) return;
 
         this.lastTime = new Date().getTime();
         for (Loop loop : res.loops()) {
@@ -53,14 +53,14 @@ class InfiniteLoopThread extends Thread {
     }
 }
 
-record LoopEngineRes (ArrayList<Loop> loops, ArrayList<FixedLoop> fixedLoops, boolean isStop, double acceleration) { };
-public class LoopEngine {
-    protected ArrayList<Loop> loops = new ArrayList<>();
-    protected ArrayList<FixedLoop> fixedLoops = new ArrayList<>();
+record LoopEngineRes(CopyOnWriteArrayList<Loop> loops, CopyOnWriteArrayList<FixedLoop> fixedLoops, boolean isStop, double acceleration) { }
 
+public class LoopEngine {
+    private final InfiniteLoopThread infiniteLoopThread;
+    protected CopyOnWriteArrayList<Loop> loops = new CopyOnWriteArrayList<>();
+    protected CopyOnWriteArrayList<FixedLoop> fixedLoops = new CopyOnWriteArrayList<>();
     protected boolean isStop = false;
     protected double acceleration = 1;
-    private final InfiniteLoopThread infiniteLoopThread;
 
     public LoopEngine() {
         this.infiniteLoopThread = new InfiniteLoopThread(
@@ -75,30 +75,19 @@ public class LoopEngine {
     }
 
     public void addLoop(String name, LoopHandler loopHandler) {
-        try {
-            loops.add(new Loop(name, loopHandler));
-            this.loops.add(new Loop(name, loopHandler));
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        this.loops.add(new Loop(name, loopHandler));
     }
 
     protected void removeLoop(String name) {
-        try {
-            this.loops.removeIf(l -> Objects.equals(l.name, name));
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
+        this.loops.removeIf(l -> Objects.equals(l.name, name));
     }
+
     public void addFixedLoop(String name, LoopHandler loopHandler, double interval) {
-        final ArrayList<FixedLoop> loops = new ArrayList<>(this.fixedLoops);
-        loops.add(new FixedLoop(name, loopHandler, interval));
-        this.fixedLoops = loops;
+        this.fixedLoops.add(new FixedLoop(name, loopHandler, interval));
     }
-    public void removeFixedLoop(String name) {
 
-        this.fixedLoops = new ArrayList<FixedLoop>(this.fixedLoops.stream().filter(l -> !Objects.equals(l.name, name)).toList());
+    public void removeFixedLoop(String name) {
+        this.fixedLoops.removeIf(l -> Objects.equals(l.name, name));
     }
 }
 

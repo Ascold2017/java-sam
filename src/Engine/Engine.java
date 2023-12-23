@@ -5,9 +5,7 @@ import Engine.FlightObject.Enemy;
 import Engine.LoopEngine.LoopHandler;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import static Tools.CollectionTools.findByProperty;
 
 public class Engine extends LoopEngine {
     ArrayList<BaseFlightObject> flightObjects = new ArrayList<>();
@@ -33,10 +31,11 @@ public class Engine extends LoopEngine {
         this.removeLoop(id);
         this.flightObjects.removeIf(fo -> Objects.equals(fo.id, id));
     }
-
+    /*
     public List<BaseFlightObject> getFlightObject(String id) {
         return findByProperty(this.flightObjects, fo -> Objects.equals(fo.id, id));
     }
+     */
 
     public ArrayList<BaseFlightObject> getFlightObjects() {
         return this.flightObjects;

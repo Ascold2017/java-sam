@@ -13,7 +13,6 @@ public class Missile extends BaseFlightObject {
     private double traveledDistance = 0;
     public Missile(Engine engine, Enemy target) {
         super(engine, "Missile-" + new Date().getTime());
-
         this.target = target;
         this.maxDistance = SAM_PARAMS.MISSILE_MAX_DISTANCE;
         this.killRadius = SAM_PARAMS.MISSILE_KILL_RADIUS;
@@ -23,8 +22,12 @@ public class Missile extends BaseFlightObject {
     @Override
     public void update(double time) {
         final double dTime = (time - this.timeInAir);
-        // TODO if (!this.target) return this.destroy();
+
         super.update(time);
+        if (this.target.isDestroyed) {
+            this.destroy();
+            return;
+        }
         final double dFlightDistance = dTime * this.velocity;
         this.traveledDistance += dFlightDistance;
 
@@ -34,6 +37,7 @@ public class Missile extends BaseFlightObject {
         final Vector3D currentPosition = this.calcMissilePosition(targetVector, prevMissileVector, targetDistance, dFlightDistance);
         this.currentPoint = new Point(currentPosition.x(), currentPosition.y(), currentPosition.z(), this.velocity);
         if (targetDistance <= this.killRadius) {
+            System.out.println("HIT! Miss distance: " + targetDistance);
             this.target.kill();
             this.destroy();
         }
