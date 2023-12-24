@@ -1,2 +1,2 @@
 # SAM project on Java
-Console application of SAM-system
+Desktop application of SAM-system
