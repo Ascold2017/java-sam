@@ -8,9 +8,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 import javafx.stage.Stage;
-
-import java.util.Date;
 import java.util.List;
 
 public class DesktopUI {
@@ -22,12 +21,13 @@ public class DesktopUI {
         this.sam = sam;
         this.canvas = new Canvas(600, 600);
         GraphicsContext ctx = canvas.getGraphicsContext2D();
+
         initRenderLoop(ctx);
 
         Pane root = new Pane();
         root.getChildren().add(canvas);
 
-        Scene scene = new Scene(root, 600, 600, Color.WHITESMOKE);
+        Scene scene = new Scene(root, 600, 600, Color.BLACK);
 
         stage.setTitle("JavaFX SAM");
         stage.setScene(scene);
@@ -38,6 +38,8 @@ public class DesktopUI {
         LoopHandler renderLoopHandler = (double time) -> {
             ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
             ctx.setFill(Color.BLACK);
+            drawBackground(ctx);
+            drawCircles(ctx);
             drawLines(ctx);
             drawFlightObjects(ctx);
         };
@@ -45,16 +47,36 @@ public class DesktopUI {
 
     }
 
+    private void drawBackground(GraphicsContext ctx) {
+        ctx.setFill(Color.web("rgb(15, 33, 19)"));
+        ctx.fillArc(0, 0, canvas.getWidth(), canvas.getHeight(), 0, 360, ArcType.OPEN);
+    }
+
+    private void drawCircles(GraphicsContext ctx) {
+        ctx.setStroke(Color.web("rgb(150, 249, 123)"));
+        ctx.setLineWidth(0.1);
+        for (int r = 100; r < this.canvas.getWidth() /2; r+= 100) {
+            ctx.strokeArc(
+                    this.canvas.getWidth()/2 - r,
+                    this.canvas.getWidth()/2 - r,
+                    r*2,
+                    r*2,
+                    0, 360,
+                    ArcType.OPEN
+            );
+        }
+    }
+
     private void drawLines(GraphicsContext ctx) {
-
-        ctx.beginPath();
-        ctx.moveTo(canvas.getWidth() / 2, 0);
-        ctx.lineTo(canvas.getWidth() / 2, canvas.getHeight());
-        ctx.moveTo(0, canvas.getHeight() / 2);
-        ctx.lineTo(canvas.getWidth(), canvas.getHeight() / 2);
-        ctx.stroke();
-
-        ctx.fillText(new Date().toString(), 400, 15);
+        ctx.setStroke(Color.web("rgb(150, 249, 123)"));
+        ctx.setLineWidth(0.05);
+        for (int l = 0; l < 36; l++) {
+            double sin = Math.sin(l * 10 * (Math.PI / 180) - Math.PI / 2);
+            double cos = Math.cos(l * 10 * (Math.PI / 180) - Math.PI / 2);
+            ctx.moveTo(cos * 50 + 300, sin * 50 + 300);
+            ctx.lineTo(cos * 300 + 300, sin * 300 + 300);
+            ctx.stroke();
+        }
     }
 
     private void drawFlightObjects(GraphicsContext ctx) {
