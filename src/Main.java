@@ -1,22 +1,37 @@
-import Engine.*;
+import DesktopUI.DesktopUI;
+import Engine.Engine;
 import Engine.FlightObject.Point;
+import Engine.Mission;
 import SAM.SAM;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Program {
+public class Main extends Application {
+    private Engine engine;
+    private SAM sam;
+
     public static void main(String[] args) {
-        System.out.println("_____SAM_____");
-        Engine engine = new Engine();
-        Point[] points = {new Point(-80, -80, 50, 10), new Point(80, 80, 1, 10) };
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage stage) {
+        initEngine();
+        new DesktopUI(stage, this.engine, this.sam);
+    }
+
+    private void initEngine() {
+        this.engine = new Engine();
+        this.sam = new SAM(this.engine);
+        Point[] points = {new Point(-80, -80, 50, 10), new Point(500, 50, 1, 10)};
         Mission[] missions = {
                 new Mission("FlightObject01", points, 0.5, 0)
         };
 
         engine.startMission(missions);
-
-        SAM sam = new SAM(engine);
 
         TimerTask task = new TimerTask() {
             @Override
@@ -25,7 +40,7 @@ public class Program {
                 sam.launchMissile("FlightObject01");
             }
         };
-        new Timer(true).schedule(task,  1000);
+        new Timer(true).schedule(task, 1000);
         TimerTask task2 = new TimerTask() {
             @Override
             public void run() {
@@ -33,10 +48,8 @@ public class Program {
                 sam.launchMissile("FlightObject01");
             }
         };
-        new Timer(true).schedule(task2,  2000);
-
-
-
-
+        new Timer(true).schedule(task2, 2000);
     }
+
+
 }

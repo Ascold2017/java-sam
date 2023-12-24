@@ -35,7 +35,7 @@ public class SAM {
         for (BaseFlightObject flightObject : flightObjects) {
             detectedFlightObjects.add(new DetectedFlightObject(flightObject));
         }
-        this.printFlightObjects();
+        // this.printFlightObjects();
     }
 
     void printFlightObjects() {
@@ -44,6 +44,10 @@ public class SAM {
             System.out.println(fo);
             System.out.println("_________________________________");
         }
+    }
+
+    public List<DetectedFlightObject> getDetectedFlightObjects() {
+        return this.detectedFlightObjects.stream().toList();
     }
 
 
