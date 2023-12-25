@@ -24,7 +24,7 @@ public class Engine extends LoopEngine {
         LoopHandler flightObjectHandler = flightObject::update;
 
         this.flightObjects.add(flightObject);
-        this.addLoop(flightObject.id, flightObjectHandler);
+        this.addFPSLoop(flightObject.id, flightObjectHandler);
     }
 
     public void removeFlightObject(String id) {
@@ -38,7 +38,7 @@ public class Engine extends LoopEngine {
      */
 
     public ArrayList<BaseFlightObject> getFlightObjects() {
-        return this.flightObjects;
+        return new ArrayList<>(this.flightObjects);
     }
 
     public void printFlightObjects() {

@@ -14,7 +14,7 @@ public record SAM_PARAMS() {
     public static final double TARGET_RADAR_RAY_WIDTH = Math.toRadians(4);
     public static final double TARGET_RADAR_RAY_HEIGHT = Math.toRadians(18);
     public static final double RADAR_UPDATE_INTERVAL = 2000;
-    public static final double MISSILE_VELOCITY = 20;
+    public static final double MISSILE_VELOCITY = 10;
     public static final double MISSILE_MAX_DISTANCE = 100;
     public static final double MISSILE_KILL_RADIUS = 1.5;
     public static final double MISSILE_MAX_DELTA_ROTATION = 1;

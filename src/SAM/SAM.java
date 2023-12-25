@@ -19,7 +19,7 @@ public class SAM {
     public SAM(Engine engine) {
         this.engine = engine;
         LoopHandler updateRadar = this::updateRadar;
-        this.engine.addLoop("updateRadar", updateRadar);
+        this.engine.addFPSLoop("updateRadar", updateRadar);
     }
 
 
@@ -45,15 +45,11 @@ public class SAM {
             System.out.println("_________________________________");
         }
     }
-
     public List<DetectedFlightObject> getDetectedFlightObjects() {
-        return this.detectedFlightObjects.stream().toList();
+        return new ArrayList<DetectedFlightObject>(this.detectedFlightObjects);
     }
-
-
-
     public void launchMissile(String targetId) {
-        final List<DetectedFlightObject> target = this.detectedFlightObjects.stream().filter(f -> f.id.equals(targetId)).toList();
+        final List<DetectedFlightObject> target = this.getDetectedFlightObjects().stream().filter(f -> f.id.equals(targetId)).toList();
         System.out.println(target);
         if (target.isEmpty()) return;
         if (target.getFirst().isMissile) return;
@@ -62,7 +58,4 @@ public class SAM {
         //Sounds.missileStart();
         this.engine.addFlightObject(missile);
     }
-
-
-
 }
