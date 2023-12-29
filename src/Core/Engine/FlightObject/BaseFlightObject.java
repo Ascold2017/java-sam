@@ -1,6 +1,6 @@
-package Engine.FlightObject;
+package Core.Engine.FlightObject;
 
-import Engine.Engine;
+import Core.Engine.Engine;
 
 public class BaseFlightObject {
     public final String id;
@@ -33,7 +33,7 @@ public class BaseFlightObject {
         this.timeInAir = time;
     }
 
-    void destroy() {
+    public void destroy() {
         System.out.println("DESTROY " + this.id);
         this.isDestroyed = true;
         this.engine.removeFlightObject(this.id);

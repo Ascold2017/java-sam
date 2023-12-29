@@ -1,6 +1,6 @@
-package Engine;
+package Core.Engine;
 
-import Engine.FlightObject.Point;
+import Core.Engine.FlightObject.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 

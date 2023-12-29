@@ -1,8 +1,8 @@
-package Engine;
-import Engine.LoopEngine.LoopEngine;
-import Engine.FlightObject.BaseFlightObject;
-import Engine.FlightObject.Enemy;
-import Engine.LoopEngine.LoopHandler;
+package Core.Engine;
+import Core.Engine.LoopEngine.LoopEngine;
+import Core.Engine.FlightObject.BaseFlightObject;
+import Core.Engine.FlightObject.Enemy;
+import Core.Engine.LoopEngine.LoopHandler;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -24,24 +24,17 @@ public class Engine extends LoopEngine {
         LoopHandler flightObjectHandler = flightObject::update;
 
         this.flightObjects.add(flightObject);
-        this.addLoop(flightObject.id, flightObjectHandler);
+        this.addFPSLoop(flightObject.id, flightObjectHandler, 100);
     }
 
     public void removeFlightObject(String id) {
         this.removeLoop(id);
         this.flightObjects.removeIf(fo -> Objects.equals(fo.id, id));
     }
-    /*
-    public List<BaseFlightObject> getFlightObject(String id) {
-        return findByProperty(this.flightObjects, fo -> Objects.equals(fo.id, id));
-    }
-     */
+
 
     public ArrayList<BaseFlightObject> getFlightObjects() {
         return this.flightObjects;
     }
 
-    public void printFlightObjects() {
-        System.out.println(this.flightObjects);
-    }
 }

@@ -1,4 +1,4 @@
-package Engine.FlightObject;
+package Core.Engine.FlightObject;
 
 public class Point {
     public double x;

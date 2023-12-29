@@ -1,6 +1,6 @@
-package Engine.FlightObject;
+package Core.Engine.FlightObject;
 
-import Engine.Engine;
+import Core.Engine.Engine;
 
 import java.util.ArrayList;
 import java.util.List;

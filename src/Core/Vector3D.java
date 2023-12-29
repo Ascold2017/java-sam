@@ -1,6 +1,6 @@
-package Tools;
+package Core;
 
-import Engine.FlightObject.Point;
+import Core.Engine.FlightObject.Point;
 
 /**
  * The vector factory.

@@ -1,8 +1,8 @@
-package Engine.FlightObject;
+package Core.Engine.FlightObject;
 
-import Engine.*;
-import SAM.SAM_PARAMS;
-import Tools.Vector3D;
+import Core.Engine.*;
+import Core.SAM.SAM_PARAMS;
+import Core.Vector3D;
 import java.util.Date;
 
 public class Missile extends BaseFlightObject {
@@ -11,12 +11,14 @@ public class Missile extends BaseFlightObject {
     private final double maxDistance;
     private final double killRadius;
     private double traveledDistance = 0;
-    public Missile(Engine engine, Enemy target) {
+    private final GuidanceMethod guidanceMethod;
+    public Missile(Engine engine, Enemy target, GuidanceMethod guidanceMethod) {
         super(engine, "Missile-" + new Date().getTime());
         this.target = target;
         this.maxDistance = SAM_PARAMS.MISSILE_MAX_DISTANCE;
         this.killRadius = SAM_PARAMS.MISSILE_KILL_RADIUS;
         this.velocity = SAM_PARAMS.MISSILE_VELOCITY;
+        this.guidanceMethod = guidanceMethod;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class Missile extends BaseFlightObject {
         final Vector3D targetVector = new Vector3D(this.target.getCurrentPoint());
         final Vector3D prevMissileVector = new Vector3D(this.currentPoint.copy());
         final double targetDistance = targetVector.sub(prevMissileVector).r();
-        final Vector3D currentPosition = this.calcMissilePosition(targetVector, prevMissileVector, targetDistance, dFlightDistance);
+        final Vector3D currentPosition = this.calcMissilePositionThreePoints(targetVector, prevMissileVector, targetDistance, dFlightDistance);
         this.currentPoint = new Point(currentPosition.x(), currentPosition.y(), currentPosition.z(), this.velocity);
         if (targetDistance <= this.killRadius) {
             System.out.println("HIT! Miss distance: " + targetDistance);
@@ -46,7 +48,7 @@ public class Missile extends BaseFlightObject {
         }
     }
 
-    private Vector3D calcMissilePosition(Vector3D targetVector, Vector3D prevMissileVector, double targetDistance, double dFlightDistance) {
+    private Vector3D calcMissilePositionThreePoints(Vector3D targetVector, Vector3D prevMissileVector, double targetDistance, double dFlightDistance) {
         final double distance = Math.min(dFlightDistance, targetDistance);
         // https://qna.habr.com/q/1189118
         final double a = targetVector.dot(targetVector);

@@ -1,6 +1,7 @@
-import Engine.*;
-import Engine.FlightObject.Point;
-import SAM.SAM;
+import Core.Engine.*;
+import Core.Engine.FlightObject.GuidanceMethod;
+import Core.Engine.FlightObject.Point;
+import Core.SAM.SAM;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,7 +23,7 @@ public class Program {
             @Override
             public void run() {
                 System.out.println("LAUNCH!!!!");
-                sam.launchMissile("FlightObject01");
+                sam.launchMissile("FlightObject01", 0, GuidanceMethod.ThreePoint);
             }
         };
         new Timer(true).schedule(task,  1000);
@@ -30,13 +31,9 @@ public class Program {
             @Override
             public void run() {
                 System.out.println("LAUNCH!!!!");
-                sam.launchMissile("FlightObject01");
+                sam.launchMissile("FlightObject01", 1, GuidanceMethod.ThreePoint);
             }
         };
         new Timer(true).schedule(task2,  2000);
-
-
-
-
     }
 }
