@@ -34,9 +34,11 @@ public class BaseFlightObject {
     }
 
     public void destroy() {
-        System.out.println("DESTROY " + this.id);
-        this.isDestroyed = true;
-        this.engine.removeFlightObject(this.id);
+        if (!this.isDestroyed) {
+            System.out.println("DESTROY " + this.id);
+            this.isDestroyed = true;
+            this.engine.removeFlightObject(this.id);
+        }
     }
 
     @Override

@@ -7,7 +7,6 @@ import Core.Engine.FlightObject.Missile;
 import Core.Engine.LoopEngine.LoopHandler;
 import Core.SAM.RadarObject.BaseRadarObject;
 import Core.SAM.RadarObject.DetectedRadarObject;
-import Core.SAM.RadarObject.SnowRadarObject;
 import Core.SAM.RadarObject.UndetectedRadarObject;
 
 import java.util.ArrayList;
@@ -19,13 +18,16 @@ class MissileChannel {
     public int id;
     public DetectedRadarObject target = null;
     public Missile missile = null;
+
     MissileChannel(int id) {
         this.id = id;
     }
+
     public void set(DetectedRadarObject target, Missile missile) {
         this.target = target;
         this.missile = missile;
     }
+
     public void reset() {
         this.target = null;
         this.missile.destroy();
@@ -34,16 +36,17 @@ class MissileChannel {
 }
 
 public class SAM {
-    public boolean isEnabled = false;
     final Engine engine;
     private final ArrayList<BaseRadarObject> radarObjects = new ArrayList<>();
     private final ArrayList<String> selectedObjectIds = new ArrayList<>();
     private final ArrayList<MissileChannel> missileChannels = new ArrayList<>();
+    public boolean isEnabled = false;
     private int missilesLeft = SAM_PARAMS.MISSILES_COUNT;
 
     public SAM(Engine engine) {
         this.engine = engine;
         LoopHandler updateRadar = this::updateRadar;
+        this.updateRadar(0);
         this.engine.addFPSLoop("updateRadar", updateRadar, 40);
         for (int i = 0; i < SAM_PARAMS.MISSILES_CHANNEL_COUNT; i++) {
             this.missileChannels.add(new MissileChannel(i));
@@ -56,54 +59,54 @@ public class SAM {
     }
 
     void updateRadar(double time) {
-       List<Enemy> enemies = this.engine.getFlightObjects()
-               .stream()
-               .filter(fo -> fo instanceof Enemy && BaseRadarObject.getDistance(fo.getCurrentPoint()) < SAM_PARAMS.MAX_DISTANCE)
-               .sorted(DetectedRadarObject.sortByVisibilityComparator)
-               .map(fo -> (Enemy)fo)
-               .toList();
+        List<Enemy> enemies = this.engine.getFlightObjects()
+                .stream()
+                .filter(fo -> fo instanceof Enemy && BaseRadarObject.getDistance(fo.getCurrentPoint()) < SAM_PARAMS.MAX_DISTANCE)
+                .sorted(DetectedRadarObject.sortByVisibilityComparator)
+                .map(fo -> (Enemy) fo)
+                .toList();
 
-       List<Enemy> detectedEnemies = enemies
-               .stream()
+        List<Enemy> detectedEnemies = enemies
+                .stream()
                 .filter(e -> {
                     double distance = BaseRadarObject.getDistance(e.getCurrentPoint());
                     return distance < SAM_PARAMS.MAX_CAPTURE_RANGE && distance > SAM_PARAMS.MIN_CAPTURE_RANGE;
                 })
-               .toList()
-               .subList(0, SAM_PARAMS.RADAR_MAX_DETECT_COUNT - 1);
-
-       List<Enemy> undetectedEnemies = enemies
-               .stream()
-               .filter(e -> detectedEnemies.stream().noneMatch(de -> de.id.equals(e.id)))
-               .toList();
-
-       List<Missile> missiles = this.engine.getFlightObjects()
-                .stream()
-                .filter(fo -> fo instanceof Missile)
-                .map(fo -> (Missile)fo)
+                .limit(SAM_PARAMS.RADAR_MAX_DETECT_COUNT)
                 .toList();
 
-       List<DetectedRadarObject> detectedRadarObjects = detectedEnemies
+        List<Enemy> undetectedEnemies = enemies
+                .stream()
+                .filter(e -> detectedEnemies.stream().noneMatch(de -> de.id.equals(e.id)))
+                .toList();
+
+        List<Missile> missiles = this.engine.getFlightObjects()
+                .stream()
+                .filter(fo -> fo instanceof Missile)
+                .map(fo -> (Missile) fo)
+                .toList();
+
+        List<DetectedRadarObject> detectedRadarObjects = detectedEnemies
                 .stream()
                 .map(DetectedRadarObject::new)
                 .filter(fo -> fo.isVisible)
                 .toList();
 
-       this.radarObjects.clear();
-       this.radarObjects.addAll(detectedRadarObjects);
-       this.radarObjects.addAll(undetectedEnemies.stream().map(UndetectedRadarObject::new).filter(fo -> fo.isVisible).toList());
-       this.radarObjects.addAll(missiles.stream().map(DetectedRadarObject::new).toList());
+        this.radarObjects.clear();
+        this.radarObjects.addAll(detectedRadarObjects);
+        this.radarObjects.addAll(undetectedEnemies.stream().map(UndetectedRadarObject::new).filter(fo -> fo.isVisible).toList());
+        this.radarObjects.addAll(missiles.stream().map(DetectedRadarObject::new).toList());
         // TODO snow objects
         // this.radarObjects.addAll(new ArrayList<>().stream().map(() -> new SnowRadarObject()).toList());
         // remove disapperead selected objects
         this.selectedObjectIds.removeIf(selectedObjectId -> detectedRadarObjects.stream().anyMatch(dro -> Objects.equals(dro.id, selectedObjectId)));
         // free missile channels with disappered targets
         for (MissileChannel missileChannel : this.missileChannels) {
-            if (missileChannel.target != null && detectedRadarObjects.stream().noneMatch(dro -> dro.id == missileChannel.target.id)) {
-               missileChannel.reset();
+            if (missileChannel.target != null && detectedRadarObjects.stream().noneMatch(dro -> Objects.equals(dro.id, missileChannel.target.id))) {
+                missileChannel.reset();
             }
         }
-        this.printFlightObjects();
+        // this.printFlightObjects();
     }
 
     void printFlightObjects() {
@@ -134,18 +137,20 @@ public class SAM {
     }
 
     public void launchMissile(String targetId, int channelId, GuidanceMethod method) {
-         List<DetectedRadarObject> target = this.radarObjects
+        List<DetectedRadarObject> target = this.radarObjects
                 .stream()
                 .filter(f -> f.id.equals(targetId) && f instanceof DetectedRadarObject && !((DetectedRadarObject) f).isMissile)
-                .map(f -> (DetectedRadarObject)f)
+                .map(f -> (DetectedRadarObject) f)
+                .toList();
+        List<String> radarObjects = this.radarObjects
+                .stream()
+                .map(f -> f.getClass().toString())
                 .toList();
         final MissileChannel channel = this.missileChannels.get(channelId);
-
         if (!target.isEmpty() && this.missilesLeft > 0 && channel.missile == null && this.selectedObjectIds.stream().anyMatch(soi -> Objects.equals(soi, targetId))) {
             final Missile missile = new Missile(this.engine, (Enemy) target.getFirst().getFlightObject(), method);
             this.missilesLeft--;
             channel.set(target.getFirst(), missile);
-            System.out.println(missile);
             this.engine.addFlightObject(missile);
         }
     }
@@ -158,7 +163,7 @@ public class SAM {
         final List<DetectedRadarObject> radarObject = this.radarObjects
                 .stream()
                 .filter(ro -> ro instanceof DetectedRadarObject)
-                .map(ro -> (DetectedRadarObject)ro)
+                .map(ro -> (DetectedRadarObject) ro)
                 .filter(dro -> Objects.equals(dro.id, targetId))
                 .toList();
 

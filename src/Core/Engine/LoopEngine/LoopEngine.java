@@ -36,7 +36,6 @@ public class LoopEngine {
     public void addFPSLoop(String name, LoopHandler loopHandler, double fps) {
         FPSLoopThread thread = new FPSLoopThread(name, loopHandler, fps);
         thread.start();
-        System.out.println(thread);
         this.loopThreads.add(thread);
     }
     public void addFixedLoop(String name, LoopHandler loopHandler, double interval) {

@@ -5,7 +5,7 @@ public record SAM_PARAMS() {
     public static final double MIN_ELEVATION = Math.toRadians(-5);
     public static final double MAX_ELEVATION = Math.toRadians(50);
     public static final double MAX_DISTANCE = 80000;
-    public static final double MIN_CAPTURE_RANGE = 2000;
+    public static final double MIN_CAPTURE_RANGE = 0; //2000;
     public static final double MAX_CAPTURE_RANGE = 60000;
     public static final double RADAR_AZIMUT_DETECT_ACCURACY = Math.toRadians(4);
     public static final double RADAR_ELEVATION_DETECT_ACCURACY = Math.toRadians(18);
@@ -17,7 +17,7 @@ public record SAM_PARAMS() {
 
     public static final int MISSILES_COUNT = 12;
     public static final int MISSILES_CHANNEL_COUNT = 6;
-    public static final double MISSILE_VELOCITY = 1200;
+    public static final double MISSILE_VELOCITY = 10;
     public static final double MISSILE_MAX_DISTANCE = 50000;
     public static final double MISSILE_KILL_RADIUS = 1.5;
     public static final double MISSILE_MAX_DELTA_ROTATION = 1;
