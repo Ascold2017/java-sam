@@ -1,2 +1,2 @@
-# Core.SAM project on Java
-Console application of Core.SAM-system
+# SAM project on Java
+Server application of SAM-system
