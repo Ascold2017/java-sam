@@ -118,7 +118,7 @@ public class SAM {
     }
 
     public ArrayList<BaseRadarObject> getRadarObjects() {
-        return this.radarObjects;
+        return new ArrayList<>(this.radarObjects);
     }
 
     public List<BaseRadarObject> getSelectedObjects() {

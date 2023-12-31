@@ -6,34 +6,36 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class WebSocketServer extends ServerSocket {
-    private final ArrayList<SocketThread> socketThreads = new ArrayList<>();
+public class WebSocketServer extends Thread {
+    private final ConcurrentHashMap<String, SocketThread> socketThreads = new ConcurrentHashMap<>();
     public WebSocketServer(int port) throws IOException {
-        super(port);
-
+        super("websocketServer");
         this.init(port);
+    }
 
-        this.close();
-    }
-    private List<SocketThread> getSocketThreads() {
-        return this.socketThreads.stream().toList();
-    }
     private void init(int port) throws IOException {
+        ServerSocket server = new ServerSocket(port);
         System.out.println("Server started at port: " + port);
-        while (!Thread.interrupted()) {
-            Socket clientSocket = this.accept();
-            System.out.println(this.getSocketThreads());
-
-            SocketThread st = new SocketThread(clientSocket, (String name) -> {
-                this.socketThreads.removeIf(socketThread -> Objects.equals(socketThread.getName(), name));
+        while (true) {
+            Socket socket = server.accept();
+            SocketThread t = new SocketThread(socket, (name) -> {
+                System.out.println(this.socketThreads);
+                this.socketThreads.remove(name);
             });
-            this.socketThreads.add(st);
-            st.start();
+            this.socketThreads.put(t.getName(), t);
         }
     }
 
-    public void broadcastMessage() {
-
+    public void broadcastMessage(String message) {
+        this.socketThreads.forEach((key, st) -> {
+            try {
+                st.sendMessage(message);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

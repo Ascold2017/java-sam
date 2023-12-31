@@ -41,7 +41,6 @@ public class LoopEngine {
     public void addFixedLoop(String name, LoopHandler loopHandler, double interval) {
         FixedLoopThread thread = new FixedLoopThread(name, loopHandler, interval);
         thread.start();
-
         this.loopThreads.add(thread);
     }
 
