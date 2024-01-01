@@ -10,7 +10,20 @@
     socket.addEventListener('open', () => console.info('OPENED'));
     socket.addEventListener('close', () => console.info('CLOSED'));
     socket.addEventListener('error', (e) => console.error(e));
-    socket.addEventListener('message', (e) => console.log(e.data));
+    socket.addEventListener('message', (e) => {
+        const data = e.data;
+        const [type, payload] = data.split('|');
+        switch(type) {
+            case 'PING':
+                console.info('PING');
+                break;
+            case 'RADAR_OBJECTS_UPDATE':
+                console.log('UPDATE');
+                console.dir(JSON.parse(payload));
+                break;
+            default: return;
+        }
+    });
 </script>
 </body>
 </html>

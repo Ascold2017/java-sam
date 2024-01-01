@@ -27,7 +27,7 @@ public class Main {
         server.start();
 
         engine.addFixedLoop("socketUpdate", (double time) -> {
-            Gson gson = new GsonBuilder().setPrettyPrinting()
+            Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
 

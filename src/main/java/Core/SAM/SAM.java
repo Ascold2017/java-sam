@@ -7,33 +7,13 @@ import Core.Engine.FlightObject.Missile;
 import Core.Engine.LoopEngine.LoopHandler;
 import Core.SAM.RadarObject.BaseRadarObject;
 import Core.SAM.RadarObject.DetectedRadarObject;
+import Core.SAM.RadarObject.SnowRadarObject;
 import Core.SAM.RadarObject.UndetectedRadarObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
-class MissileChannel {
-    public int id;
-    public DetectedRadarObject target = null;
-    public Missile missile = null;
-
-    MissileChannel(int id) {
-        this.id = id;
-    }
-
-    public void set(DetectedRadarObject target, Missile missile) {
-        this.target = target;
-        this.missile = missile;
-    }
-
-    public void reset() {
-        this.target = null;
-        this.missile.destroy();
-        this.missile = null;
-    }
-}
 
 public class SAM {
     final Engine engine;
@@ -96,8 +76,9 @@ public class SAM {
         this.radarObjects.addAll(detectedRadarObjects);
         this.radarObjects.addAll(undetectedEnemies.stream().map(UndetectedRadarObject::new).filter(fo -> fo.isVisible).toList());
         this.radarObjects.addAll(missiles.stream().map(DetectedRadarObject::new).toList());
-        // TODO snow objects
-        // this.radarObjects.addAll(new ArrayList<>().stream().map(() -> new SnowRadarObject()).toList());
+        for (int i = 0; i < 50; i++) {
+            this.radarObjects.add(new SnowRadarObject());
+        }
         // remove disapperead selected objects
         this.selectedObjectIds.removeIf(selectedObjectId -> detectedRadarObjects.stream().anyMatch(dro -> Objects.equals(dro.id, selectedObjectId)));
         // free missile channels with disappered targets
@@ -105,15 +86,6 @@ public class SAM {
             if (missileChannel.target != null && detectedRadarObjects.stream().noneMatch(dro -> Objects.equals(dro.id, missileChannel.target.id))) {
                 missileChannel.reset();
             }
-        }
-        // this.printFlightObjects();
-    }
-
-    void printFlightObjects() {
-        System.out.println("RadarObjects: " + this.radarObjects.size());
-        for (BaseRadarObject fo : this.radarObjects) {
-            System.out.println(fo);
-            System.out.println("_________________________________");
         }
     }
 

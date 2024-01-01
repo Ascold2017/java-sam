@@ -32,7 +32,7 @@ public class BaseRadarObject {
     public final double size;
     @Expose
     public final double visibilityK;
-    @Expose
+
     public final boolean isVisible;
 
     protected BaseRadarObject(BaseRadarObjectRes res) {
