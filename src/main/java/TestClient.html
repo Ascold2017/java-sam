@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    const socket = new WebSocket('ws://127.0.0.1:8000');
+    socket.addEventListener('open', () => console.info('OPENED'));
+    socket.addEventListener('close', () => console.info('CLOSED'));
+    socket.addEventListener('error', (e) => console.error(e));
+    socket.addEventListener('message', (e) => console.log(e.data));
+</script>
+</body>
+</html>

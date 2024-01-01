@@ -8,11 +8,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.Objects;
+import java.util.Date;
 import java.util.Scanner;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,10 +18,31 @@ public class SocketThread extends Thread {
     private final Socket socket;
     private InputStream inputStream;
     private OutputStream outputStream;
-    SocketThread(Socket socket, Consumer<String> onDisconnectHandler) throws IOException {
+
+    private ConcurrentHashMap<String, SocketThread> socketThreads = new ConcurrentHashMap<>();
+    SocketThread(Socket socket, ConcurrentHashMap<String, SocketThread> socketThreads) throws IOException {
         super(String.valueOf(socket.getPort()));
         this.socket = socket;
+        this.socketThreads = socketThreads;
         System.out.println("Client connected: " + this.socket.getPort());
+
+    }
+
+    @Override
+    public void run() {
+        super.run();
+        try {
+            this.init();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void closeSocket() throws IOException {
+        this.socket.close();
+    }
+
+    private void init() throws IOException {
         try {
             this.inputStream = this.socket.getInputStream();
             this.outputStream = this.socket.getOutputStream();
@@ -32,28 +51,24 @@ public class SocketThread extends Thread {
             this.sendMessage("Hello client");
 
             this.ping();
-        } catch (Exception ex) {
-            System.out.println(ex);
+        } catch (DisconnectException ex) {
             this.socket.close();
-            // TODO not working
-
-            onDisconnectHandler.accept(this.getName());
+            this.interrupt();
+            this.socketThreads.remove(this.getName());
         }
     }
 
-    public void closeSocket() throws IOException {
-        this.socket.close();
-    }
-
-    private void ping() throws IOException {
-        int intervals = 1000;
+    private void ping() throws DisconnectException {
+        long intervals = 1000;
+        long lastTime = new Date().getTime();
         do {
-            if (System.currentTimeMillis() % intervals == 0) {
+            if (new Date().getTime() >= lastTime + intervals) {
+                lastTime = new Date().getTime();
                 try {
-                    this.sendMessage("TICK");
+                    this.sendMessage("TICK" + threadId());
                 } catch (IOException e) {
-                    System.out.println(this.socket + " disconnected");
-                    throw new IOException("Client disconnected");
+                    System.out.println("Socket " + this.socket.getPort() + " disconnected");
+                    throw new DisconnectException();
                 }
             }
         } while (!Thread.interrupted());
@@ -196,5 +211,11 @@ public class SocketThread extends Thread {
         }
     }
 
+}
+
+class DisconnectException extends Exception {
+    DisconnectException() {
+        super();
+    }
 }
 

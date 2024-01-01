@@ -22,4 +22,5 @@ public class DetectedRadarObject extends BaseRadarObject {
         if (enemy1.visibilityK == enemy2.visibilityK) return 0;
         return enemy1.visibilityK < enemy2.visibilityK ? 1 : -1;
     };
+
 }
