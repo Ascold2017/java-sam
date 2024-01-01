@@ -2,10 +2,14 @@ package Core.SAM.RadarObject;
 
 import Core.Engine.FlightObject.BaseFlightObject;
 import Core.Engine.FlightObject.Missile;
+import com.google.gson.annotations.Expose;
 
 import java.util.Comparator;
 
 public class DetectedRadarObject extends BaseRadarObject {
+    @Expose
+    public final String type = "DETECTED_RADAR_OBJECT";
+    @Expose
     public final boolean isMissile;
     private final BaseFlightObject flightObject;
     public DetectedRadarObject(BaseFlightObject flightObject) {

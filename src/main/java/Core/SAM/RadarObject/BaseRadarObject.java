@@ -2,22 +2,37 @@ package Core.SAM.RadarObject;
 
 import Core.Engine.FlightObject.Point;
 import Core.SAM.SAM_PARAMS;
+import com.google.gson.annotations.Expose;
 
 
 public class BaseRadarObject {
+    @Expose
     public final String id;
+    @Expose
     public final double distance;
+    @Expose
     public final double azimuth;
+    @Expose
     public final double elevation;
+    @Expose
     public final double radialVelocity;
+    @Expose
     public final double velocity;
+    @Expose
     public final double height;
+    @Expose
     public final double param;
+    @Expose
     public final double x;
+    @Expose
     public final double y;
+    @Expose
     public final double rotation;
+    @Expose
     public final double size;
+    @Expose
     public final double visibilityK;
+    @Expose
     public final boolean isVisible;
 
     protected BaseRadarObject(BaseRadarObjectRes res) {

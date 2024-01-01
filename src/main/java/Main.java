@@ -3,7 +3,8 @@ import Core.Engine.FlightObject.Point;
 import Core.Engine.Mission;
 import Core.SAM.SAM;
 import Server.WebSocketServer.WebSocketServer;
-import org.json.JSONArray;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class Main {
 
@@ -26,10 +27,14 @@ public class Main {
         server.start();
 
         engine.addFixedLoop("socketUpdate", (double time) -> {
-            // TODO bad serialization
-            String radarObjectsJson = new JSONArray(sam.getRadarObjects()).toString();
-            System.out.println(radarObjectsJson);
+            Gson gson = new GsonBuilder().setPrettyPrinting()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
+
+            String radarObjectsJson = gson.toJson(sam.getRadarObjects());
+
             server.broadcastMessage("RADAR_OBJECTS_UPDATE|" + radarObjectsJson);
         }, 2000);
     }
 }
+
