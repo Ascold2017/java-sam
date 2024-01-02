@@ -1,4 +1,4 @@
-package Server.WebSocketServer;
+package Server;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
