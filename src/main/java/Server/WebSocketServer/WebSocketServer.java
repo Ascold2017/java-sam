@@ -1,6 +1,7 @@
 package Server.WebSocketServer;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +45,7 @@ public class WebSocketServer extends Thread {
             try {
                 st.sendMessage(message);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.println(e.getMessage());
             }
         });
     }

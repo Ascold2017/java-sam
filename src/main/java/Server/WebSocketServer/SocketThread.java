@@ -18,6 +18,7 @@ public class SocketThread extends Thread {
     private final Socket socket;
     private InputStream inputStream;
     private OutputStream outputStream;
+    private boolean isConnected = false;
 
     private final ConcurrentHashMap<String, SocketThread> socketThreads;
     SocketThread(Socket socket, ConcurrentHashMap<String, SocketThread> socketThreads) {
@@ -42,8 +43,10 @@ public class SocketThread extends Thread {
             this.outputStream = this.socket.getOutputStream();
             this.doHandShakeToInitializeWebSocketConnection();
             System.out.println("Client connected: " + this.socket.getPort());
+            this.isConnected = true;
             this.ping();
         } catch (DisconnectException ex) {
+            this.isConnected = false;
             this.socket.close();
             this.interrupt();
             this.socketThreads.remove(this.getName());
@@ -118,8 +121,10 @@ public class SocketThread extends Thread {
     }
 
     public void sendMessage(String message) throws IOException {
-        this.outputStream.write(this.encode(message));
-        this.outputStream.flush();
+        if (this.outputStream != null && this.isConnected) {
+            this.outputStream.write(this.encode(message));
+            this.outputStream.flush();
+        }
     }
 
     private void doHandShakeToInitializeWebSocketConnection() {

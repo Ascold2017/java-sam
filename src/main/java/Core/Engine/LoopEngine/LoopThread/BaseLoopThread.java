@@ -28,8 +28,6 @@ public class BaseLoopThread extends Thread {
         if (this.isStop) return;
 
         double delta = ((double) new Date().getTime() - this.lastTime) * this.acceleration;
-        int maxDelta = 100;
-        if (delta > maxDelta) delta = maxDelta;
 
         this.handle(delta);
     }

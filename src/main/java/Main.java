@@ -26,15 +26,32 @@ public class Main {
         WebSocketServer server = new WebSocketServer(8000);
         server.start();
 
-        engine.addFixedLoop("socketUpdate", (double time) -> {
-            Gson gson = new GsonBuilder()
+        Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
+        Gson gson2 = new Gson();
 
+        String selectedTargetIdsJson = gson2.toJson(sam.getSelectedObjectIds());
+        String missileChannelsJson = gson.toJson(sam.getMissileChannels());
+        server.broadcastMessage("SELECTED_TARGET_IDS_UPDATE|" + selectedTargetIdsJson);
+        server.broadcastMessage("MISSILE_CHANNELS_UPDATE|" + missileChannelsJson);
+        server.broadcastMessage("MISSILES_LEFT_UPDATE|" + sam.getMissilesLeft());
+
+        engine.addFixedLoop("socketFixedUpdate", (double time) -> {
             String radarObjectsJson = gson.toJson(sam.getRadarObjects());
-
             server.broadcastMessage("RADAR_OBJECTS_UPDATE|" + radarObjectsJson);
+
         }, 2000);
+/*
+        engine.addFPSLoop("socketFPSUpdate", (double time) -> {
+            String selectedTargetIdsJson = gson2.toJson(sam.getSelectedObjectIds());
+            String missileChannelsJson = gson.toJson(sam.getMissileChannels());
+            server.broadcastMessage("SELECTED_TARGET_IDS_UPDATE|" + selectedTargetIdsJson);
+            server.broadcastMessage("MISSILE_CHANNELS_UPDATE|" + missileChannelsJson);
+            server.broadcastMessage("MISSILES_LEFT_UPDATE|" + sam.getMissilesLeft());
+        }, 40);
+
+ */
     }
 }
 

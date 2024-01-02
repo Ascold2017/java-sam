@@ -93,15 +93,12 @@ public class SAM {
         return new ArrayList<>(this.radarObjects);
     }
 
-    public List<BaseRadarObject> getSelectedObjects() {
-        return this.radarObjects
-                .stream()
-                .filter(ro -> this.selectedObjectIds.stream().anyMatch(soi -> soi.equals(ro.id)))
-                .toList();
+    public ArrayList<String> getSelectedObjectIds() {
+        return new ArrayList<>(this.selectedObjectIds);
     }
 
     public ArrayList<MissileChannel> getMissileChannels() {
-        return this.missileChannels;
+        return new ArrayList<>(this.missileChannels);
     }
 
     public int getMissilesLeft() {
